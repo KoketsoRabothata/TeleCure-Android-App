@@ -1,0 +1,125 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if isOwner(uid);
+
+      match /dependents/{dependentId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /addresses/{addressId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      match /payment_methods/{methodId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    match /doctors/{doctorId} {
+      allow read: if isSignedIn();
+      // Normally managed via admin/seed scripts — the one exception is a review submission,
+      // which only ever touches the rating and reviewCount fields (see ReviewRepository).
+      allow update: if isSignedIn() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rating', 'reviewCount']);
+      allow create, delete: if false;
+    }
+
+    match /appointments/{apptId} {
+      allow read, update: if isSignedIn() && (resource.data.patientUid == request.auth.uid || resource.data.doctorUid == request.auth.uid);
+      allow create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+    }
+
+    match /medicines/{medId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /orders/{orderId} {
+      allow read, create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+    }
+
+    match /prescriptions/{rxId} {
+      allow read: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /medical_records/{recordId} {
+      allow read, create, update: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+    }
+
+    match /chat_threads/{chatId} {
+      allow read, create, update: if isSignedIn() && (request.resource.data.patientUid == request.auth.uid || resource.data.patientUid == request.auth.uid);
+
+      match /messages/{messageId} {
+        allow read, create: if isSignedIn();
+      }
+    }
+
+    match /health_tips/{tipId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /notifications/{notifId} {
+      allow read, update, delete: if isSignedIn() && resource.data.userUid == request.auth.uid;
+      allow create: if false; // written by backend/cloud functions
+    }
+
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /medication_reminders/{reminderId} {
+      allow read, update, delete: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+    }
+
+    match /medical_aid/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    match /lab_tests/{testId} {
+      allow read, create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+      allow update: if false; // status/results updated by lab/admin backend
+    }
+
+    match /health_metrics/{entryId} {
+      allow read, create, delete: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read, delete: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+    }
+
+    match /refill_requests/{requestId} {
+      allow read, create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+      allow update: if false; // approved/declined by the doctor side
+    }
+
+    match /loyalty_entries/{entryId} {
+      allow read, create: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /waitlist/{entryId} {
+      allow read, create, delete: if isSignedIn() && request.resource.data.patientUid == request.auth.uid;
+      allow read, delete: if isSignedIn() && resource.data.patientUid == request.auth.uid;
+    }
+  }
+}

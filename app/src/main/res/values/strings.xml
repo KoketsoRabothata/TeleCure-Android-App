@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TeleCure</string>
+    <string name="tagline">Trusted care, anytime, anywhere</string>
+
+    <!-- Get this from Firebase console → Authentication → Sign-in method → Google →
+         Web SDK configuration → Web client ID (appears once you enable the Google provider). -->
+    <string name="google_web_client_id" translatable="false">777144603248-va6g5jul319mtvd8ug2etc8il74qv8vg.apps.googleusercontent.com</string>
+</resources>

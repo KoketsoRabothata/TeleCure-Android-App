@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "777144603248",
+    "project_id": "telecure-c08c3",
+    "storage_bucket": "telecure-c08c3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:777144603248:android:f9e8f2c35b2e62c0f8dab5",
+        "android_client_info": {
+          "package_name": "com.telecure.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "777144603248-ojodihpl75qnm52lj4cb7sjk9slj78v2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.telecure.app",
+            "certificate_hash": "73943c4f3df7fbed3890e9780ff4f71b2700ecc5"
+          }
+        },
+        {
+          "client_id": "777144603248-va6g5jul319mtvd8ug2etc8il74qv8vg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjHCjtKrlqFLuwW5AS_fYutWJMz_9KbcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "777144603248-va6g5jul319mtvd8ug2etc8il74qv8vg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
