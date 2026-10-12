@@ -1,0 +1,29 @@
+
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: JavaToolInstaller@0
+    displayName: 'Set up Java 17'
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+
+  - script: |
+      chmod +x ./gradlew
+      ./gradlew testDebugUnitTest assembleDebug
+    displayName: 'Build Android app and run unit tests'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Android test results'
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '**/build/test-results/testDebugUnitTest/*.xml'
+      searchFolder: '$(System.DefaultWorkingDirectory)'
+      mergeTestResults: true
+      failTaskOnFailedTests: false
